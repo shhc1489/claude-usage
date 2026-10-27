@@ -21,7 +21,7 @@ No build tools needed. To build from source instead, see [macOS](#macos) or [Win
 | Lives in | Menu bar: icon + `42%` | System tray: `42` drawn in the icon |
 | Built with | Swift / SwiftUI | C# / WinForms on .NET Framework 4.8 |
 | Download size | ~130 KB zip | ~15 KB zip |
-| Source | [`main.swift`](main.swift), [`build.sh`](build.sh) | [`windows/`](windows) |
+| Source | [`macos/`](macos) | [`windows/`](windows) |
 
 ## Requirements
 
@@ -50,8 +50,8 @@ The usage endpoint isn't publicly documented, so it may change without notice.
 Requires the Xcode command line tools.
 
 ```bash
-./build.sh
-cp -R "Claude Usage.app" /Applications/
+macos/build.sh
+cp -R "macos/Claude Usage.app" /Applications/
 open -a "Claude Usage"
 ```
 
@@ -59,7 +59,7 @@ On first launch, allow `security` to access "Claude Code-credentials" (choose **
 
 ### Sharing
 
-`./build.sh` builds a universal app (Apple Silicon and Intel) and `ClaudeUsage.zip`. Send the zip.
+`macos/build.sh` builds a universal app (Apple Silicon and Intel) and `macos/ClaudeUsage.zip`. Send the zip.
 
 The app isn't notarized, so macOS blocks it on the recipient's first launch. They can either:
 
