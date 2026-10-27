@@ -6,6 +6,15 @@ A tiny menu bar / system tray app for **macOS** and **Windows** that shows your 
 - Click for current-session and weekly usage, with when each resets.
 - Updates every 5 minutes, or on demand with Refresh.
 
+## Download
+
+Get the latest version from **[Releases](https://github.com/shhc1489/claude-usage/releases/latest)**:
+
+- **macOS:** `ClaudeUsage-macos.zip`. Unzip, drag **Claude Usage** into Applications, and open it. The first time, macOS blocks it: go to System Settings → Privacy & Security → **Open Anyway**.
+- **Windows:** `ClaudeUsage-windows.zip`. Unzip and run `ClaudeUsage.exe`. If SmartScreen appears, click **More info** → **Run anyway**.
+
+No build tools needed. To build from source instead, see [macOS](#macos) or [Windows](#windows) below.
+
 | | macOS | Windows |
 |---|---|---|
 | Runs on | macOS 13+ (Apple Silicon and Intel) | Windows 10 and 11 |
