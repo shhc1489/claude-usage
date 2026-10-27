@@ -1,22 +1,44 @@
 # Claude Usage
 
-A tiny macOS menu bar app (and [Windows tray app](#windows)) that shows your Claude subscription usage.
+A tiny menu bar / system tray app for **macOS** and **Windows** that shows your Claude subscription usage at a glance.
 
-- The menu bar shows your current 5-hour session usage as a percentage.
-- Click it to see current-session and weekly usage, with when each resets.
+- Your current 5-hour session usage, always visible as a percentage.
+- Click for current-session and weekly usage, with when each resets.
 - Updates every 5 minutes, or on demand with Refresh.
+
+| | macOS | Windows |
+|---|---|---|
+| Runs on | macOS 13+ (Apple Silicon and Intel) | Windows 10 and 11 |
+| Lives in | Menu bar: icon + `42%` | System tray: `42` drawn in the icon |
+| Built with | Swift / SwiftUI | C# / WinForms on .NET Framework 4.8 |
+| Download size | ~130 KB zip | ~15 KB zip |
+| Source | [`main.swift`](main.swift), [`build.sh`](build.sh) | [`windows/`](windows) |
+
+## Requirements
+
+- [Claude Code](https://claude.com/claude-code) installed and logged in (`claude`, then log in) at least once, on the same computer.
+- A Claude subscription (Pro or Max).
+
+Each person sees their own usage. The app contains no account details of its own.
 
 ## How it works
 
-It reads the Claude Code login stored in your macOS keychain (`Claude Code-credentials`) and calls the same usage endpoint that Claude Code's `/usage` command uses. When the access token has expired, it refreshes it the way Claude Code does and writes the new token back to the keychain, so Claude Code stays logged in.
+Both versions read the login Claude Code already saved on your computer and call the same usage endpoint that Claude Code's `/usage` command uses.
 
-You need Claude Code installed and logged in (`claude`, then log in) at least once.
+| | Where the login is read from |
+|---|---|
+| macOS | Keychain item `Claude Code-credentials` |
+| Windows | `%USERPROFILE%\.claude\.credentials.json` (or `%CLAUDE_CONFIG_DIR%`) |
+
+When the access token has expired, the app refreshes it the way Claude Code does and saves the new token back, so Claude Code stays logged in.
 
 The usage endpoint isn't publicly documented, so it may change without notice.
 
-## Build
+## macOS
 
-Requires macOS 13+ and the Xcode command line tools.
+### Build and install
+
+Requires the Xcode command line tools.
 
 ```bash
 ./build.sh
@@ -26,7 +48,7 @@ open -a "Claude Usage"
 
 On first launch, allow `security` to access "Claude Code-credentials" (choose **Always Allow**). To start it at login, add it in System Settings → General → Login Items.
 
-## Sharing
+### Sharing
 
 `./build.sh` builds a universal app (Apple Silicon and Intel) and `ClaudeUsage.zip`. Send the zip.
 
@@ -35,17 +57,13 @@ The app isn't notarized, so macOS blocks it on the recipient's first launch. The
 - try to open it once, then click **Open Anyway** in System Settings → Privacy & Security, or
 - run `xattr -dr com.apple.quarantine "/Applications/Claude Usage.app"`.
 
-Each person needs Claude Code installed and logged in on their own Mac; the app shows their usage, not yours.
-
 ## Windows
 
-The `windows/` folder has a Windows 10/11 tray app with the same features. It's a single small `ClaudeUsage.exe` built on .NET Framework 4.8, which ships with Windows, so there's nothing to install.
+A single small `ClaudeUsage.exe`. .NET Framework 4.8 ships with Windows 10 and 11, so there's nothing to install.
 
-- The tray icon shows your 5-hour session % as a number, colored orange, then amber at 70% and red at 90%. Hover for session and weekly %.
-- Left-click for the panel with session and weekly usage and reset times. Right-click for Refresh, **Start with Windows**, and Quit.
-- It reads Claude Code's login from `%USERPROFILE%\.claude\.credentials.json` (or `%CLAUDE_CONFIG_DIR%`), and refreshes it like the Mac app.
-
-Windows hides new tray icons by default. Drag it from the `^` overflow onto the taskbar to keep it visible.
+- The tray icon shows your session % as a number, orange normally, amber at 70% and red at 90%. Hover for session and weekly %.
+- Left-click for the usage panel. Right-click for Refresh, **Start with Windows**, and Quit.
+- Windows hides new tray icons by default. Drag it from the `^` overflow onto the taskbar to keep it visible.
 
 ### Build
 
