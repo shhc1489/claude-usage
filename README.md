@@ -25,3 +25,14 @@ open -a "Claude Usage"
 ```
 
 On first launch, allow `security` to access "Claude Code-credentials" (choose **Always Allow**). To start it at login, add it in System Settings → General → Login Items.
+
+## Sharing
+
+`./build.sh` builds a universal app (Apple Silicon and Intel) and `ClaudeUsage.zip`. Send the zip.
+
+The app isn't notarized, so macOS blocks it on the recipient's first launch. They can either:
+
+- try to open it once, then click **Open Anyway** in System Settings → Privacy & Security, or
+- run `xattr -dr com.apple.quarantine "/Applications/Claude Usage.app"`.
+
+Each person needs Claude Code installed and logged in on their own Mac; the app shows their usage, not yours.
