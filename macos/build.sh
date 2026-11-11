@@ -15,7 +15,7 @@ cat > "$APP/Contents/Info.plist" <<'EOF'
   <key>CFBundleIdentifier</key><string>local.claude-usage</string>
   <key>CFBundleExecutable</key><string>ClaudeUsage</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>1.0</string>
+  <key>CFBundleShortVersionString</key><string>1.0.1</string>
   <key>LSMinimumSystemVersion</key><string>13.0</string>
   <key>LSUIElement</key><true/>
 </dict></plist>
