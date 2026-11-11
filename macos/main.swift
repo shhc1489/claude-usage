@@ -39,7 +39,13 @@ struct Credentials {
     /// Refreshes the token the same way Claude Code does and writes it back,
     /// so Claude Code keeps working with the rotated refresh token.
     mutating func refresh() async throws {
-        guard let rt = refreshToken else { throw AppError("No refresh token — run `claude` and log in") }
+        // The refresh token has a fixed lifetime; once it passes, only a new sign-in helps.
+        if let ms = oauth["refreshTokenExpiresAt"] as? Double, ms > 0,
+           Date(timeIntervalSince1970: ms / 1000) < Date() {
+            let when = Date(timeIntervalSince1970: ms / 1000).formatted(date: .abbreviated, time: .omitted)
+            throw AppError("Claude Code login expired on \(when) — run `claude auth login` in Terminal")
+        }
+        guard let rt = refreshToken else { throw AppError("No refresh token — run `claude auth login` in Terminal") }
         let body = try JSONSerialization.data(withJSONObject: [
             "grant_type": "refresh_token", "refresh_token": rt, "client_id": Self.clientID,
         ])
@@ -54,7 +60,7 @@ struct Credentials {
                 guard (resp as? HTTPURLResponse)?.statusCode == 200,
                       let tok = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                       let access = tok["access_token"] as? String
-                else { lastError = AppError("Token refresh rejected — run `claude` and log in"); continue }
+                else { lastError = AppError("Claude Code login expired — run `claude auth login` in Terminal"); continue }
                 var o = oauth
                 o["accessToken"] = access
                 if let newRT = tok["refresh_token"] as? String { o["refreshToken"] = newRT }
@@ -82,7 +88,7 @@ struct Credentials {
         let data = out.fileHandleForReading.readDataToEndOfFile()
         p.waitUntilExit()
         guard p.terminationStatus == 0 else {
-            throw AppError("Claude Code credentials not found in keychain — run `claude` and log in")
+            throw AppError("Claude Code credentials not found in keychain — run `claude auth login` in Terminal")
         }
         return String(data: data, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
     }

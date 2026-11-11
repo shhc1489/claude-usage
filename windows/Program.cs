@@ -79,7 +79,7 @@ namespace ClaudeUsage
         {
             var p = FilePath;
             if (!File.Exists(p))
-                throw new Exception("Claude Code login not found — run `claude` and log in");
+                throw new Exception("Claude Code login not found — run `claude auth login` in Terminal");
             var root = Json.Deserialize<Dictionary<string, object>>(File.ReadAllText(p));
             var c = new Credentials(p, root);
             if (c.OAuth == null) throw new Exception("Couldn't read Claude Code credentials");
@@ -90,7 +90,15 @@ namespace ClaudeUsage
         /// so Claude Code keeps working with the rotated refresh token.
         public async Task RefreshAsync(HttpClient http)
         {
-            if (RefreshToken == null) throw new Exception("No refresh token — run `claude` and log in");
+            // The refresh token has a fixed lifetime; once it passes, only a new sign-in helps.
+            var rtExp = Get("refreshTokenExpiresAt");
+            if (rtExp != null && Convert.ToDouble(rtExp) > 0)
+            {
+                var when = DateTimeOffset.FromUnixTimeMilliseconds((long)Convert.ToDouble(rtExp));
+                if (when < DateTimeOffset.UtcNow)
+                    throw new Exception($"Claude Code login expired on {when.LocalDateTime:d MMM yyyy} — run `claude auth login` in Terminal");
+            }
+            if (RefreshToken == null) throw new Exception("No refresh token — run `claude auth login` in Terminal");
             var body = Json.Serialize(new Dictionary<string, object>
             {
                 ["grant_type"] = "refresh_token",
@@ -105,7 +113,7 @@ namespace ClaudeUsage
                     var resp = await http.PostAsync(url, new StringContent(body, Encoding.UTF8, "application/json"));
                     if (!resp.IsSuccessStatusCode)
                     {
-                        last = new Exception("Token refresh rejected — run `claude` and log in");
+                        last = new Exception("Claude Code login expired — run `claude auth login` in Terminal");
                         continue;
                     }
                     var tok = Json.Deserialize<Dictionary<string, object>>(await resp.Content.ReadAsStringAsync());
